@@ -146,7 +146,8 @@ sub autosend_entry_notify_bulk {
 sub autosend_entry_notify {
     my ($plugin, $cb, $app, $entry, $orig_obj) = @_;
     ###l4p $logger ||= MT::Log::Log4perl->new(); $logger->trace();
-
+    
+    
     # check if this sub was called by the cms_post_bulk_save.entries callback
     # if so, we don't need to check for the "auto_notifications" toggle
     my $bulk = shift;
@@ -189,6 +190,14 @@ sub autosend_entry_notify {
         return;
     }
     my $blogarg = 'blog:'.$app->blog->id;
+
+    #check if auto_notification is on
+    my $is_auto = $app->{query}->param('auto_notifications') || 0;
+    if(!$is_auto){
+	doLog("auto_notification is disabled");
+        return;
+    }
+
     my $notify_list
         = $plugin->get_config_value('nw_entry_list', $blogarg) || 0;
     my $notify_emails
@@ -613,6 +622,16 @@ sub _sent_notifications {
         return;
     }
     return @notes ? \@notes : undef;
+}
+
+sub doLog {
+    my ($msg) = @_;
+    return unless defined($msg);
+
+    use MT::Log;
+    my $log = MT::Log->new;
+    $log->message($msg) ;
+    $log->save or die $log->errstr;
 }
 
 # sub _app_param_dump {
