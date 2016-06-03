@@ -194,7 +194,7 @@ sub autosend_entry_notify {
     #check if auto_notification is on
     my $is_auto = $app->{query}->param('auto_notifications') || 0;
     if(!$is_auto){
-	doLog("auto_notification is disabled");
+	#doLog("auto_notification is disabled");
         return;
     }
 
